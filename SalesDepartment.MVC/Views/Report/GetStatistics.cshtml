@@ -1,0 +1,205 @@
+﻿@model SalesDepartment.Application.UseCases.Reports.StatisticResponse
+
+@{
+    Layout = "_Layout";
+}
+<style>
+
+    .statistics-section {
+        margin-bottom: 20px;
+        padding: 20px;
+        border: 1px solid #ccc;
+        background-color: #f9f9f9;
+        border-radius: 5px;
+    }
+
+        /* Style for the section headings */
+        .statistics-section h2 {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        /* Style for the tables */
+        .statistics-section table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        /* Style for table headers */
+        .statistics-section th {
+            background-color: #333;
+            color: #fff;
+            padding: 10px;
+            text-align: left;
+        }
+
+        /* Style for table cells */
+        .statistics-section td {
+            padding: 10px;
+            border: 1px solid #ccc;
+        }
+
+    h3 {
+        color: #007bff; /* Change the color to your preference */
+    }
+
+    .col-md-6 {
+        margin-bottom: 20px;
+    }
+
+        .table th {
+            background-color: #007bff; /* Change the background color to your preference */
+            color: #fff; /* Change the text color to your preference */
+        }
+
+        .table th, .table td {
+            text-align: center;
+        }
+</style>
+<style>
+    /* Add your custom styles here */
+    .container {
+        padding: 20px;
+    }
+
+    .scrollable-content {
+        overflow-y: scroll;
+        max-height: 80vh;
+        width: 100%;
+    }
+
+    .table {
+        width: 100%;
+    }
+
+    h3 {
+        color: #007bff;
+    }
+
+    .col-md-6 {
+        margin-bottom: 20px;
+        background-color: #fff; /* Add a white background color */
+        padding: 20px;
+        border-radius: 5px;
+    }
+
+
+        .table th {
+            background-color: #007bff;
+            color: #fff;
+            padding: 10px;
+        }
+
+        .table th, .table td {
+            text-align: center;
+            padding: 10px;
+            border: 1px solid #ddd; /* Add a border to table cells */
+        }
+</style>
+
+<h3 class="text-center">Статистика продаж «BagishamalCity»</h3>
+<hr>
+
+<div class="container">
+    <div class="scrollable-content">
+        <div class="statistics-section">
+        <h2>Контракты</h2>
+        <div class="row">
+            <div class="col-md-6">
+                <h4>Все контракты</h4>
+                <p>@Model.AllContracts</p>
+                <h4>Все контракты в текущем году</h4>
+                <p>@Model.AllContractsNumberInCurrentYear</p>
+                <h4>Все контракты в текущем месяце</h4>
+                <p>@Model.AllContractsInCurrentMonth</p>
+                <h4>Все контракты за последние 7 дней</h4>
+                <p>@Model.AllContractsInCurrentWeek</p>
+                <h4>Все контракты за текущий день</h4>
+                <p>@Model.AllContractsInCurrentDay</p>
+            </div>
+            <div class="col-md-6">
+                <h4>Общая сумма всех контрактов</h4>
+                <p>@string.Format("{0:N2}", Model.TotalAmountOfAllContracts)</p>
+                <h4>Общая сумма всех контрактов в текущем году</h4>
+                <p>@string.Format("{0:N2}", Model.TotalAmountOfAllContractsInCurrentYear)</p>
+                <h4>Общая сумма всех контрактов в текущем месяце</h4>
+                <p>@string.Format("{0:N2}", Model.TotalAmountOfAllContractsInCurrentMonth)</p>
+                <h4>Общая сумма всех контрактов за последние 7 дней</h4>
+                <p>@string.Format("{0:N2}", Model.TotalAmountOfAllContractsInCurrentWeek)</p>
+                <h4>Общая сумма всех контрактов в текущий день</h4>
+                <p>@string.Format("{0:N2}", Model.TotalAmountOfAllContractsInCurrentDay)</p>
+            </div>
+        </div>
+        </div>
+
+        <div class="statistics-section">
+        <h2>Платежи</h2>
+        <div class="row">
+            <div class="col-md-6">
+                <h4>Все платежи</h4>
+                <p>@Model.CountOfAllPayments</p>
+                <h4>Все платежи в текущем году</h4>
+                <p>@Model.CountOfAllPaymentsInCurrentYear</p>
+                <h4>Все платежи в текущем месяце</h4>
+                <p>@Model.CountOfPaymentsInCurrentMonth</p>
+                <h4>Все платежи за последние 7 дней</h4>
+                <p>@Model.CountOfPaymentsInLastSevenDays</p>
+                <h4>Все платежи за текущий день</h4>
+                <p>@Model.CountOfPaymentsInCurrentDay</p>
+            </div>
+            <div class="col-md-6">
+                <h4>Общая сумма всех платежей</h4>
+                <p>@string.Format("{0:N2}", Model.TotalAmountOfAllPayments)</p>
+                <h4>Общая сумма всех платежей в текущем году</h4>
+                <p>@string.Format("{0:N2}", Model.TotalAmountOfAllPaymentsInCurrentYear)</p>
+                <h4>Общая сумма всех платежей в текущем месяце</h4>
+                <p>@string.Format("{0:N2}", Model.TotalAmountOfAlPaymentsInCurrentMonth)</p>
+                <h4>Общая сумма всех платежей за последние 7 дней</h4>
+                <p>@string.Format("{0:N2}", Model.TotalAmountOfAllPaymentsInLastSevenDays)</p>
+                <h4>Общая сумма всех платежей в текущий день</h4>
+                <p>@string.Format("{0:N2}", Model.TotalAmountOfAllPaymentsInCurrentDay)</p>
+            </div>
+        </div>
+        </div>
+
+        <div class="statistics-section">
+        <h4>Все контракты учредителей</h4>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>ФИО основателя</th>
+                    <th>Количество контрактов</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var founder in Model.AllContractsByFounders)
+                {
+                    <tr>
+                        <td>@founder.Key</td>
+                        <td>@founder.Value</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+        </div>
+
+        <div class="statistics-section">
+            <h2>Квартиры и Клиенты</h2>
+            <div class="row">
+                <div class="col-md-6">
+                    <h4>Все Квартиры</h4>
+                    <p>@Model.CountOfAllHomes</p>
+                    <h4>Квартиры с Контрактом </h4>
+                    <p>@Model.CountOfHomeWithContract</p>
+                    <h4>Квартиры без Контрактом</h4>
+                    <p>@Model.CountOfHomeWithoutContract</p>
+                </div>
+                <div class="col-md-6">
+                    <h4>Все Клиенты</h4>
+                    <p>@Model.CountOfAllCustomers</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

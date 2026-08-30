@@ -1,0 +1,275 @@
+﻿@{
+    Layout = "_Layout";
+}
+
+@model SalesDepartment.Application.UseCases.Contracts.Response.ContractResponse[]
+
+<h3 class="text-center">Все Контракты</h3>
+<div class="row">
+    <div class="col">
+            <div class="input-group mb-1 mt-3" style="display:flex; justify-content:space-between; gap:20px;">
+            <div style="display: flex; gap: 20px;">
+                <a href="@Url.Action("CreateContract")" class="btn btn-primary mr-2">
+                    <i class="fa-solid fa-plus"></i> Договор
+                </a>
+                <a asp-controller="Founder" asp-action="GetAllFounders" class="nav-link">
+                    <div class="icon-wrapper">
+                        <i class="fa-solid fa-user-group"></i> Основатели
+                    </div>
+                </a>
+            </div>
+           
+            
+            <div style="display:flex; gap:5px">
+                <button id="refreshButton" class="btn btn-warning"><i class="fa-solid fa-arrows-rotate"></i></button>
+                <input id="searchInput" type="text" class="form-control" placeholder="Поиск" style="max-width: 200px;">
+                <div class="input-group-append">
+                    <button id="searchButtonSimple" class="btn btn-info" type="button">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col">
+        <div class="input-group mb-1 mt-3" style="display:flex; justify-content:space-between; gap:170px">
+
+            <div>
+                <a asp-controller="Contract" asp-action="GetAllContractsExcel" class="btn btn-success">
+                    <i class="fa-solid fa-file-excel"></i> <i class="fa-solid fa-download"></i>Получить в Excel
+                </a>
+            </div>
+            <div style="display:flex; gap:5px">
+                <select id="sortColumn" class="form-control">
+                    <option value="ContractNumber">Контракт №</option>
+                    <option value="ContractStartDate">Дата контракта</option>
+                    <option value="TotalAmountOfContract">Сумма контракта</option>
+                    <option value="HomeId">Квартира</option>
+                    <option value="CustomerId">Клиент</option>
+                    <option value="FounderId">Основатель</option>
+                </select>
+                <select id="sortOrder" class="form-control">
+                    <option value="asc">Восходящий</option>
+                    <option value="desc">Нисходящий</option>
+                </select>
+                <button id="sortButton" class="btn btn-info"><i class="fa-solid fa-arrow-up-a-z"></i> </button>
+                <button id="toggleExtendedSearch" class="btn btn-info"> <i class="fa-solid fa-filter"></i> </button>
+            </div>
+
+        </div>
+    </div>
+</div>
+<div id="extendedSearchContainer" style="display: none;">
+    <div class="row">
+        <div class="col">
+            <div class="input-group mb-1 mt-3" style="display:flex; justify-content:space-between; gap:5px;">
+                <input id="searchContractNumber" type="text" class="form-control" placeholder="Контракт №">
+                <input id="searchStartDate" type="date" class="form-control" placeholder="Дата контракта">
+                <input id="searchTotalAmountOfContract" type="text" class="form-control" placeholder="Сумма контракта">
+                <input id="searchHomeId" type="text" class="form-control" placeholder="Квартира">
+                <input id="searchCustomerId" type="text" class="form-control" placeholder="Клиент">
+                <input id="searchFounderId" type="text" class="form-control" placeholder="Основатель">
+                <div class="input-group-append">
+                    <button id="searchButton" class="btn btn-info" type="button">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<hr />
+
+<div class="container" style="height: 90vh;">
+    <div class="row" style="display:flex; justify-content:center;">
+        <div class="col-lg-6" style="width:100%">
+            <div class="custom-cards">
+                @{
+                    if (Model.Length == 0)
+                    {
+                        <h2>Контрактов пока нет...</h2>
+                    }
+                }
+
+                <div class="table-container" style="overflow-y: scroll; height: 68vh; width:100% ">
+                    <table id="ContractsTable" class="table">
+                        <thead>
+                            <tr>
+                                <th style="width: 15%;">Действия</th>
+                                <th data-column="ContractNumber" style="width: 12%;">Контракт №</th>
+                                <th data-column="ContractStartDate" style="width: 15%;">Дата контракта</th>
+                                <th data-column="TotalAmountOfContract" style="width: 25%;">Сумма контракта</th>
+                                <th data-column="HomeId" style="width: 23%;">Квартира</th>
+                                <th data-column="CustomerId" style="width: 25%;">Клиент</th>
+                                <th data-column="FounderId" style="width: 25%;">Основатель</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var Contract in Model)
+                            {
+                                <tr>
+                                    <td class="action-links">
+                                        <div style="display:flex; gap:5px">
+                                            <a href="@Url.Action("ViewContract", "Contract", new { id = Contract.Id })" class="btn btn-secondary"><i class="fas fa-info-circle"></i> Подробно</a>
+                                        </div>
+                                    </td>
+                                    <td data-column="ContractNumber">@Contract.ContractNumber</td>
+                                    <td data-column="ContractStartDate">@Contract.ContractStartDate.ToString("yyyy-MM-dd")</td>
+                                    <td data-column="TotalAmountOfContract" class="amount-cell">@string.Format("{0:N2}", Contract.TotalAmountOfContract)</td>
+                                    <td data-column="HomeId">@Contract.Home.Block / @Contract.Home.Entrance / @Contract.Home.Floor / @Contract.Home.ApartmentNumber / @Contract.Home.Area</td>
+                                    <td data-column="CustomerId">@Contract.Customer.LastName @Contract.Customer.FirstName</td>
+                                    <td data-column="FounderId">@Contract.Founder.LastName @Contract.Founder.FirstName</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.getElementById('searchButtonSimple').addEventListener('click', function () {
+        var input = document.getElementById('searchInput').value.toLowerCase();
+        var rows = document.getElementById('ContractsTable').getElementsByTagName('tbody')[0].getElementsByTagName('tr');
+
+        for (var i = 0; i < rows.length; i++) {
+            var cells = rows[i].getElementsByTagName('td');
+            var match = false;
+
+            for (var j = 0; j < cells.length; j++) {
+                var cellText = cells[j].innerText.toLowerCase();
+                if (cellText.includes(input)) {
+                    match = true;
+                    break;
+                }
+            }
+
+            rows[i].style.display = match ? '' : 'none';
+        }
+    });
+
+    document.getElementById('sortButton').addEventListener('click', function () {
+        var column = document.getElementById('sortColumn').value;
+        var sortOrder = document.getElementById('sortOrder').value;
+        var rows = Array.from(document.getElementById('ContractsTable').getElementsByTagName('tbody')[0].getElementsByTagName('tr'));
+
+        rows.sort(function (a, b) {
+            var cellA = a.querySelector('td[data-column="' + column + '"]').textContent.trim();
+            var cellB = b.querySelector('td[data-column="' + column + '"]').textContent.trim();
+
+            // Handle the "TotalAmountOfContract" column
+            if (column === "TotalAmountOfContract") 
+            {
+                // Parse values as floats for correct numeric sorting
+                cellA = parseFloat(cellA.replace(/[^0-9.]+/g, '')) || 0;
+                cellB = parseFloat(cellB.replace(/[^0-9.]+/g, '')) || 0;
+            }
+
+            if (column === "ContractStartDate") {
+                cellA = new Date(cellA);
+                cellB = new Date(cellB);
+            }
+
+            if (column === "ContractNumber" || column === "HomeId" || column === "CustomerId" || column === "FounderId") {
+                // Compare string values using localeCompare
+                if (sortOrder === 'asc') {
+                    return cellA.localeCompare(cellB);
+                } else {
+                    return cellB.localeCompare(cellA);
+                }
+            }
+
+            if (sortOrder === 'asc') {
+                return cellA - cellB; // Compare numeric values directly
+            } else {
+                return cellB - cellA; // Compare numeric values directly
+            }
+        });
+
+        var tbody = document.getElementById('ContractsTable').getElementsByTagName('tbody')[0];
+        for (var i = 0; i < rows.length; i++) {
+            tbody.appendChild(rows[i]);
+        }
+    });
+</script>
+
+<script>
+    document.getElementById('refreshButton').addEventListener('click', function () {
+        console.log('Refresh button clicked');
+        // Clear the search input field
+        document.getElementById('searchInput').value = '';
+
+        // Reset the sorting to default values
+        document.getElementById('sortColumn').value = 'Block';
+        document.getElementById('sortOrder').value = 'asc';
+
+        // Reset the extended search fields
+        document.getElementById('searchContractNumber').value = '';
+        document.getElementById('searchContractStartDate').value = '';
+        document.getElementById('searchTotalAmountOfContract').value = '';
+        document.getElementById('searchContractEndDate').value = '';
+        document.getElementById('searchHomeId').value = '';
+        document.getElementById('searchCustomerId').value = '';
+        document.getElementById('searchFounderId').value = '';
+
+        // Show all rows in the table
+        var rows = document.getElementById('ContractsTable').getElementsByTagName('tbody')[0].getElementsByTagName('tr');
+        for (var i = 0; i < rows.length; i++) {
+            rows[i].style.display = '';
+        }
+    });
+</script>
+
+<script>
+    document.getElementById('searchButton').addEventListener('click', function () {
+        var searchContractNumber = document.getElementById('searchContractNumber').value.toLowerCase();
+        var searchStartDate = document.getElementById('searchStartDate').value.toLowerCase();
+        var searchTotalAmountOfContract = document.getElementById('searchTotalAmountOfContract').value.toLowerCase();
+        var searchHomeId = document.getElementById('searchHomeId').value.toLowerCase();
+        var searchCustomerId = document.getElementById('searchContractNumber').value.toLowerCase();
+        var searchFounderId = document.getElementById('searchStartDate').value.toLowerCase();
+
+        var rows = document.getElementById('ContractsTable').getElementsByTagName('tbody')[0].getElementsByTagName('tr');
+
+        for (var i = 0; i < rows.length; i++) {
+            var cells = rows[i].getElementsByTagName('td');
+            var match = true; // Assume it's a match initially
+
+            if (searchContractNumber && !cells[1].innerText.toLowerCase().includes(searchContractNumber)) {
+                match = false;
+            }
+            if (searchStartDate && !cells[2].innerText.toLowerCase().includes(searchStartDate)) {
+                match = false;
+            }
+            if (searchTotalAmountOfContract && !cells[3].innerText.toLowerCase().includes(searchTotalAmountOfContract)) {
+                match = false;
+            }
+            if (searchHomeId && !cells[4].innerText.toLowerCase().includes(searchHomeId)) {
+                match = false;
+            }
+            if (searchCustomerId && !cells[5].innerText.toLowerCase().includes(searchCustomerId)) {
+                match = false;
+            }
+            if (searchFounderId && !cells[6].innerText.toLowerCase().includes(searchFounderId)) {
+                match = false;
+            }
+
+            rows[i].style.display = match ? '' : 'none';
+        }
+    });
+</script>
+
+<script>
+    document.getElementById('toggleExtendedSearch').addEventListener('click', function () {
+        var extendedSearchContainer = document.getElementById('extendedSearchContainer');
+        if (extendedSearchContainer.style.display === 'none' || extendedSearchContainer.style.display === '') {
+            extendedSearchContainer.style.display = 'block';
+        } else {
+            extendedSearchContainer.style.display = 'none';
+        }
+    });
+</script>

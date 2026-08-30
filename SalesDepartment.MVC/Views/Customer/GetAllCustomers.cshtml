@@ -1,0 +1,266 @@
+﻿@{
+    Layout = "_Layout";
+}
+
+@model SalesDepartment.Application.UseCases.Customers.Response.CustomerResponse[]
+
+<h3 class="text-center">Все Клиенты</h3>
+<div class="row">
+    <div class="col">
+        <div class="input-group mb-1 mt-3" style="display: flex; justify-content: space-between; gap: 170px;">
+            <a href="@Url.Action("CreateCustomer")" class="btn btn-primary mr-2">
+                <i class="fa-solid fa-plus"></i> Клиент
+            </a>
+
+            <div style="display: flex; gap: 5px;">
+                <button id="refreshButton" class="btn btn-warning"><i class="fa-solid fa-arrows-rotate"></i> </button>
+                <input id="simpleSearchInput" type="text" class="form-control" placeholder="Поиск" style="max-width: 200px;">
+                <button id="simpleSearchButton" class="btn btn-info" type="button">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col">
+        <div class="input-group mb-1 mt-3" style="display: flex; justify-content: space-between; gap: 170px;">
+            <div>
+                <a asp-controller="Customer" asp-action="CreateCustomerFromExcel" class="btn btn-success">
+                    <i class="fa-solid fa-file-excel"></i> <i class="fa-solid fa-upload"></i>СоздатьИзExcel
+                </a>
+                <a asp-controller="Customer" asp-action="GetAllCustomersExcel" class="btn btn-success">
+                    <i class="fa-solid fa-file-excel"></i> <i class="fa-solid fa-download"></i>Получить в Excel
+                </a>
+            </div>
+            <div style="display: flex; gap: 5px;">
+                <select id="sortColumn" class="form-control">
+                    <option value="FirstName">Имя</option>
+                    <option value="LastName">Фамилия</option>
+                    <option value="MiddleName">Очество</option>
+                    <option value="Passport">Паспорт</option>
+                    <option value="PassportIssuedBy">Выдан Паспорт</option>
+                    <option value="Address">Адрес</option>
+                    <option value="PhoneNumberOne">Номер телефона 1</option>
+                    <option value="PhoneNumberTwo">Номер телефона 2</option>
+                </select>
+                <select id="sortOrder" class="form-control">
+                    <option value="asc">Восходящий</option>
+                    <option value="desc">Нисходящий</option>
+                </select>
+                <button id="sortButton" class="btn btn-info">
+                    <i class="fa-solid fa-arrow-up-a-z"></i>
+                </button>
+                <button id="extendedSearchButton" class="btn btn-info">
+                    <i class="fa-solid fa-filter"></i></button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="extendedSearchContainer" style="display: none;">
+    <div class="row">
+        <div class="col">
+            <div class="input-group mb-1 mt-3" style="display: flex; justify-content: space-between; gap: 5px;">
+                <!-- Add input fields for each column you want to search -->
+                <input id="searchFirstName" type="text" class="form-control" placeholder="Имя">
+                <input id="searchLastName" type="text" class="form-control" placeholder="Фамилия">
+                <input id="searchMiddleName" type="text" class="form-control" placeholder="Очество">
+                <input id="searchPassport" type="text" class="form-control" placeholder="Паспорт">
+                <input id="searchPassportIssuedBy" type="text" class="form-control" placeholder="Выдан Паспорт">
+                <input id="searchAddress" type="text" class="form-control" placeholder="Адрес">
+                <input id="searchPhoneNumberOne" type="text" class="form-control" placeholder="Номер телефона 1">
+                <input id="searchPhoneNumberTwo" type="text" class="form-control" placeholder="Номер телефона 2">
+                <div class="input-group-append">
+                    <button id="searchButton" class="btn btn-info" type="button">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<hr />
+
+<div class="container" style="height: 55vh;">
+    <div class="row" style="display: flex; justify-content: center;">
+        <div class="col-lg-6" style="width: 100%;">
+            <div class="custom-cards">
+                @if (Model.Length == 0)
+                {
+                    <h2>Клиентов пока нет...</h2>
+                }
+
+                <div class="table-container" style="overflow-y: scroll; height: 68vh; width: 100%;">
+                    <table id="CustomersTable" class="table">
+                        <thead>
+                            <tr>
+                                <th style="width: 15%;">Действия</th>
+                                <th data-column="FirstName" style="width: 15%;">Имя</th>
+                                <th data-column="LastName" style="width: 15%;">Фамилия</th>
+                                <th data-column="MiddleName" style="width: 15%;">Очество</th>
+                                <th data-column="Passport" style="width: 15%;">Паспорт</th>
+                                <th data-column="PassportIssuedBy" style="width: 15%;">Выдан Паспорт</th>
+                                <th data-column="Address" style="width: 15%;">Адрес</th>
+                                <th data-column="PhoneNumberOne" style="width: 15%;">Номер тел 1</th>
+                                <th data-column="PhoneNumberTwo" style="width: 15%;">Номер тел 2</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var customer in Model)
+                            {
+                                <tr>
+                                    <td class="action-links">
+                                        <div style="display: flex; gap: 5px;">
+                                            <a href="@Url.Action("ViewCustomer", new { id = customer.Id })" class="btn btn-secondary"> <i class="fas fa-info-circle"></i> Подробно</a>
+                                        </div>
+                                    </td>
+                                    <td data-column="FirstName">@customer.FirstName</td>
+                                    <td data-column="LastName">@customer.LastName</td>
+                                    <td data-column="MiddleName">@customer.MiddleName</td>
+                                    <td data-column="Passport">@customer.Passport</td>
+                                    <td data-column="PassportIssuedBy">@customer.PassportIssuedBy</td>
+                                    <td data-column="Address">@customer.Address</td>
+                                    <td data-column="PhoneNumberOne">@customer.PhoneNumberOne</td>
+                                    <td data-column="PhoneNumberTwo">@customer.PhoneNumberTwo</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.getElementById('simpleSearchButton').addEventListener('click', function () {
+        var input = document.getElementById('simpleSearchInput').value.toLowerCase();
+        var rows = document.getElementById('CustomersTable').getElementsByTagName('tbody')[0].getElementsByTagName('tr');
+
+        for (var i = 0; i < rows.length; i++) {
+            var cells = rows[i].getElementsByTagName('td');
+            var match = false;
+
+            for (var j = 0; j < cells.length; j++) {
+                var cellText = cells[j].innerText.toLowerCase();
+                if (cellText.includes(input)) {
+                    match = true;
+                    break;
+                }
+            }
+
+            rows[i].style.display = match ? '' : 'none';
+        }
+    });
+
+    document.getElementById('sortButton').addEventListener('click', function () {
+        var column = document.getElementById('sortColumn').value;
+        var sortOrder = document.getElementById('sortOrder').value;
+        var rows = Array.from(document.getElementById('CustomersTable').getElementsByTagName('tbody')[0].getElementsByTagName('tr'));
+
+        rows.sort(function (a, b) {
+            var cellA = a.querySelector('td[data-column="' + column + '"]').textContent.toLowerCase();
+            var cellB = b.querySelector('td[data-column="' + column + '"]').textContent.toLowerCase();
+
+            if (sortOrder === 'asc') {
+                return cellA.localeCompare(cellB);
+            } else {
+                return cellB.localeCompare(cellA);
+            }
+        });
+
+        var tbody = document.getElementById('CustomersTable').getElementsByTagName('tbody')[0];
+        for (var i = 0; i < rows.length; i++) {
+            tbody.appendChild(rows[i]);
+        }
+    });
+</script>
+
+<script>
+    document.getElementById('searchButton').addEventListener('click', function () {
+        var searchFirstName = document.getElementById('searchFirstName').value.toLowerCase();
+        var searchLastName = document.getElementById('searchLastName').value.toLowerCase();
+        var searchMiddleName = document.getElementById('searchMiddleName').value.toLowerCase();
+        var searchPassport = document.getElementById('searchPassport').value.toLowerCase();
+        var searchPassportIssuedBy = document.getElementById('searchPassportIssuedBy').value.toLowerCase();
+        var searchAddress = document.getElementById('searchAddress').value.toLowerCase();
+        var searchPhoneNumberOne = document.getElementById('searchPhoneNumberOne').value.toLowerCase();
+        var searchPhoneNumberTwo = document.getElementById('searchPhoneNumberTwo').value.toLowerCase();
+
+        var rows = document.getElementById('CustomersTable').getElementsByTagName('tbody')[0].getElementsByTagName('tr');
+
+        for (var i = 0; i < rows.length; i++) {
+            var cells = rows[i].getElementsByTagName('td');
+            var match = true; // Assume it's a match initially
+
+            if (searchFirstName && !cells[1].innerText.toLowerCase().includes(searchFirstName)) {
+                match = false;
+            }
+            if (searchLastName && !cells[2].innerText.toLowerCase().includes(searchLastName)) {
+                match = false;
+            }
+            if (searchMiddleName && !cells[3].innerText.toLowerCase().includes(searchMiddleName)) {
+                match = false;
+            }
+            if (searchPassport && !cells[4].innerText.toLowerCase().includes(searchPassport)) {
+                match = false;
+            }
+            if (searchPassportIssuedBy && !cells[5].innerText.toLowerCase().includes(searchPassportIssuedBy)) {
+                match = false;
+            }
+            if (searchAddress && !cells[6].innerText.toLowerCase().includes(searchAddress)) {
+                match = false;
+            }
+            if (searchPhoneNumberOne && !cells[7].innerText.toLowerCase().includes(searchPhoneNumberOne)) {
+                match = false;
+            }
+            if (searchPhoneNumberTwo && !cells[8].innerText.toLowerCase().includes(searchPhoneNumberTwo)) {
+                match = false;
+            }
+
+            rows[i].style.display = match ? '' : 'none';
+        }
+    });
+</script>
+
+<script>
+    document.getElementById('refreshButton').addEventListener('click', function () {
+        // Clear the search input field
+        document.getElementById('simpleSearchInput').value = '';
+
+        // Reset the sorting to default values
+        document.getElementById('sortColumn').value = 'FirstName';
+        document.getElementById('sortOrder').value = 'asc';
+
+        // Reset the extended search fields
+        document.getElementById('searchFirstName').value = '';
+        document.getElementById('searchLastName').value = '';
+        document.getElementById('searchMiddleName').value = '';
+        document.getElementById('searchPassport').value = '';
+        document.getElementById('searchPassportIssuedBy').value = '';
+        document.getElementById('searchAddress').value = '';
+        document.getElementById('searchPhoneNumberOne').value = '';
+        document.getElementById('searchPhoneNumberTwo').value = '';
+
+        // Show all rows in the table
+        var rows = document.getElementById('CustomersTable').getElementsByTagName('tbody')[0].getElementsByTagName('tr');
+        for (var i = 0; i < rows.length; i++) {
+            rows[i].style.display = '';
+        }
+    });
+</script>
+
+<script>
+    document.getElementById('extendedSearchButton').addEventListener('click', function () {
+        var extendedSearchContainer = document.getElementById('extendedSearchContainer');
+        if (extendedSearchContainer.style.display === 'none' || extendedSearchContainer.style.display === '') {
+            extendedSearchContainer.style.display = 'block';
+        } else {
+            extendedSearchContainer.style.display = 'none';
+        }
+    });
+</script>
+

@@ -1,0 +1,60 @@
+﻿@using SalesDepartment.Application.UseCases.Homes.Commands.CreateHome;
+@using SalesDepartment.Domain.Entities;
+
+@{
+    ViewData["Title"] = "CreateHome";
+    Layout = "_Layout";
+}
+
+@model CreateHomeCommand
+
+<h3 class="text-center">Добавить новую квартиру</h3>
+<hr />
+<form asp-controller="HomeBuilding" asp-action="CreateHome" enctype="multipart/form-data" method="post">
+    <div class="container mt-4">
+        <div class="row">
+            <div class="col-lg-6 offset-lg-3" style="overflow-y:scroll; width:50%; height:70vh">
+
+                <div class="form-group mt-3">
+                    <label asp-for="Block" class="form-label">Здания:</label>
+                    <input asp-for="Block" type="text" class="form-control" placeholder="Введите Здания">
+                    <span asp-validation-for="Block" class="text-danger"></span>
+                </div>
+
+                <div class="form-group mt-3">
+                    <label asp-for="Entrance" class="form-label">Подъезд:</label>
+                    <input asp-for="Entrance" type="text" class="form-control" placeholder="Введите Подъезд">
+                    <span asp-validation-for="Entrance" class="text-danger"></span>
+                </div>
+
+                <div class="form-group mt-3">
+                    <label asp-for="Floor" class="form-label">Этаж:</label>
+                    <input asp-for="Floor" type="text" class="form-control" placeholder="Введите Этаже">
+                    <span asp-validation-for="Floor" class="text-danger"></span>
+                </div>
+
+                <div class="form-group mt-3">
+                    <label asp-for="ApartmentNumber" class="form-label">Квартира №:</label>
+                    <input asp-for="ApartmentNumber" type="text" class="form-control" placeholder="Введите Квартира №">
+                    <span asp-validation-for="ApartmentNumber" class="text-danger"></span>
+                </div>
+
+                <div class="form-group mt-3">
+                    <label asp-for="NumberOfRooms" class="form-label">Количество комнат:</label>
+                    <input asp-for="NumberOfRooms" type="text" class="form-control" placeholder="Введите Количество комнат">
+                    <span asp-validation-for="NumberOfRooms" class="text-danger"></span>
+                </div>
+
+                <div class="form-group mt-3">
+                    <label asp-for="Area" class="form-label">Площадь:</label>
+                    <input asp-for="Area" type="text" class="form-control" placeholder="Введите Проектной площадью">
+                    <span asp-validation-for="Area" class="text-danger"></span>
+                </div>
+
+                <div class="form-group button-group mt-3">
+                    <button type="submit" class="btn btn-success">Сохранять</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>

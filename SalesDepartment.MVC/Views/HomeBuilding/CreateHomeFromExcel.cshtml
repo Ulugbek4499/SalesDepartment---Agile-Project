@@ -1,0 +1,16 @@
+﻿@model IFormFile
+
+@{
+    ViewData["Title"] = "Получить квартиру из Excel";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<form method="post" enctype="multipart/form-data">
+    <div class="form-group">
+        <label for="excelfile">Выберите файл Excel:</label>
+        <input type="file" name="excelfile" id="excelfile" class="form-control-file" required accept=".xlsx">
+    </div>
+
+    <button type="submit" class="btn btn-primary">Загрузить Excel</button>
+</form>

@@ -1,0 +1,276 @@
+﻿@{
+    Layout = "_Layout";
+}
+
+@model SalesDepartment.Application.UseCases.Contracts.Response.ContractResponse[]
+
+<h3 class="text-center">Статус оплаты контрактов</h3>
+<div class="row">
+    <div class="col">
+        <div class="input-group mb-1 mt-3" style="display: flex; justify-content: space-between; gap: 20px;">
+            <div style="display: flex; gap: 5px; align-items: center; justify-content: flex-end; flex-grow: 1;">
+                <button id="refreshButton" class="btn btn-warning"><i class="fa-solid fa-arrows-rotate"></i></button>
+                <input id="searchInput" type="text" class="form-control" placeholder="Поиск" style="max-width: 200px;">
+                <div class="input-group-append">
+                    <button id="searchButtonSimple" class="btn btn-info" type="button">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col">
+        <div class="input-group mb-1 mt-3" style="display:flex; justify-content:space-between; gap:170px">
+
+            <div>
+                <a asp-controller="Report" asp-action="GetContractsWithDebtExcel" class="btn btn-success">
+                    <i class="fa-solid fa-file-excel"></i> <i class="fa-solid fa-download"></i>Получить в Excel
+                </a>
+            </div>
+            <div style="display:flex; gap:5px">
+                <select id="sortColumn" class="form-control">
+                    <option value="Customer">Клиент</option>
+                    <option value="TotalAmountOfContract">Общая сумма</option>
+                    <option value="ScheduledInfo">Запланированный платеж</option>
+                    <option value="ActualInfo">Выплаченная сумма</option>
+                    <option value="DeptAmout">Долг</option>
+                    <option value="AmountOfMonthlyPayment">Ежемесячно оплата</option>
+                    <option value="PaymentStartDate">Дата начала платежа</option>
+                </select>
+                <select id="sortOrder" class="form-control">
+                    <option value="asc">Восходящий</option>
+                    <option value="desc">Нисходящий</option>
+                </select>
+                <button id="sortButton" class="btn btn-info"><i class="fa-solid fa-arrow-up-a-z"></i> </button>
+                <button id="toggleExtendedSearch" class="btn btn-info"> <i class="fa-solid fa-filter"></i> </button>
+            </div>
+
+        </div>
+    </div>
+</div>
+<div id="extendedSearchContainer" style="display: none;">
+    <div class="row">
+        <div class="col">
+            <div class="input-group mb-1 mt-3" style="display:flex; justify-content:space-between; gap:5px;">
+                <input id="searchCustomer" type="text" class="form-control" placeholder="Клиент">
+                <input id="searchDeptAmout" type="text" class="form-control" placeholder="Долг">
+                <input id="searchAmountOfMonthlyPayment" type="text" class="form-control" placeholder="Ежемесячно оплата">
+                <input id="searchContractNumber" type="text" class="form-control" placeholder="Контракт №">
+                <div class="input-group-append">
+                    <button id="searchButton" class="btn btn-info" type="button">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<hr />
+
+<div class="container" style="height: 95vh;">
+    <div class="row" style="display:flex; justify-content:center;">
+        <div class="col-lg-6" style="width:100%">
+            <div class="custom-cards">
+                @{
+                    if (Model.Length == 0)
+                    {
+                        <h2>Контрактов пока нет...</h2>
+                    }
+                }
+
+                <div class="table-container" style="overflow-y: scroll; height: 68vh; width:100% ">
+                    <table id="ContractsTable" class="table">
+                        <thead>
+                            <tr>
+                                <th style="width: 15%;">Действия</th>
+                                <th data-column="Customer" style="width: 20%;">Клиент</th>
+                                <th data-column="CustomerPhoneNumber" style="width: 20%;">Телефон клиента</th>
+                                <th data-column="TotalAmountOfContract" style="width: 20%;">Общая сумма</th>
+                                <th data-column="ScheduledInfo" style="width: 20%;">Запланированный платеж</th>
+                                <th data-column="ActualInfo" style="width: 20%;">Выплаченная сумма</th>
+                                <th data-column="DeptAmout" style="width: 20%;">Долг</th>
+                                <th data-column="PaymentStartDate" style="width: 20%;">Дата начала платежа</th>
+                                <th data-column="InAdvancePaymentOfContract" style="width: 20%;">Предоплата</th>
+                                <th data-column="AmountOfMonthlyPayment" style="width: 20%;">Ежемесячно оплата</th>
+                                <th data-column="ContractNumber" style="width: 20%;">Контракт №</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var Contract in Model)
+                            {
+                                <tr>
+                                    <td class="action-links">
+                                        <div style="display:flex; gap:5px">
+                                            <a href="@Url.Action("ViewContract", "Contract", new { id = Contract.Id })" class="btn btn-secondary"><i class="fas fa-info-circle"></i> Подробно</a>
+                                        </div>
+                                    </td>
+                                    <td data-column="Customer">@Contract.Customer.LastName @Contract.Customer.FirstName</td>
+                                    <td data-column="CustomerPhoneNumber">@Contract.Customer.PhoneNumberOne  @Contract.Customer.PhoneNumberTwo</td>
+                                    <td data-column="TotalAmountOfContract" class="amount-cell">@string.Format("{0:N2}", Contract.TotalAmountOfContract)</td>
+                                    <td data-column="ScheduledInfo" class="amount-cell">
+                                        @{
+                                            DateTime currentDate = DateTime.Now;
+                                            int currentMonth = currentDate.Month;
+                                            int currentYear = currentDate.Year;
+
+                                            decimal sumForCurrentMonth = 0;
+
+                                            foreach (var entry in Contract.ScheduledInfo)
+                                            {
+                                                if (entry.Key.Month <= currentMonth
+                                                && entry.Key.Year <= currentYear)
+                                                {
+                                                    sumForCurrentMonth = entry.Value;
+                                                }
+                                            }
+
+                                            @string.Format("{0:N2}", sumForCurrentMonth)
+                                        }
+                                    </td>
+                                    <td data-column="ActualInfo" class="amount-cell">@string.Format("{0:N2}", Contract.ActualInfo.Values.Sum())</td>
+                                    <td data-column="DeptAmout" class="amount-cell">@string.Format("{0:N2}", Contract.DeptAmout)</td>
+                                    <td data-column="PaymentStartDate">@Contract.PaymentStartDate.ToString("yyyy-MM-dd")</td>
+                                    <td data-column="InAdvancePaymentOfContract" class="amount-cell">@string.Format("{0:N2}", Contract.InAdvancePaymentOfContract)</td>
+                                    <td data-column="AmountOfMonthlyPayment" class="amount-cell">@string.Format("{0:N2}", Contract.AmountOfMonthlyPayment)</td>
+                                    <td data-column="ContractNumber">@Contract.ContractNumber</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.getElementById('searchButtonSimple').addEventListener('click', function () {
+        var input = document.getElementById('searchInput').value.toLowerCase();
+        var rows = document.getElementById('ContractsTable').getElementsByTagName('tbody')[0].getElementsByTagName('tr');
+
+        for (var i = 0; i < rows.length; i++) {
+            var cells = rows[i].getElementsByTagName('td');
+            var match = false;
+
+            for (var j = 0; j < cells.length; j++) {
+                var cellText = cells[j].innerText.toLowerCase();
+                if (cellText.includes(input)) {
+                    match = true;
+                    break;
+                }
+            }
+
+            rows[i].style.display = match ? '' : 'none';
+        }
+    });
+
+    document.getElementById('sortButton').addEventListener('click', function () {
+        var column = document.getElementById('sortColumn').value;
+        var sortOrder = document.getElementById('sortOrder').value;
+        var rows = Array.from(document.getElementById('ContractsTable').getElementsByTagName('tbody')[0].getElementsByTagName('tr'));
+
+        rows.sort(function (a, b) {
+            var cellA = a.querySelector('td[data-column="' + column + '"]').textContent.trim();
+            var cellB = b.querySelector('td[data-column="' + column + '"]').textContent.trim();
+
+            // Handle the "TotalAmountOfContract" column
+            if (column === "TotalAmountOfContract" || column === "ScheduledInfo" || column === "ActualInfo" || column === "DeptAmout" || column === "AmountOfMonthlyPayment" || column === "InAdvancePaymentOfContract") {
+                // Parse values as floats for correct numeric sorting
+                cellA = parseFloat(cellA.replace(/[^0-9.]+/g, '')) || 0;
+                cellB = parseFloat(cellB.replace(/[^0-9.]+/g, '')) || 0;
+            }
+
+            if (column === "PaymentStartDate") {
+                cellA = new Date(cellA);
+                cellB = new Date(cellB);
+            }
+
+            if (column === "Customer") {
+                // Compare string values using localeCompare
+                if (sortOrder === 'asc') {
+                    return cellA.localeCompare(cellB);
+                } else {
+                    return cellB.localeCompare(cellA);
+                }
+            }
+
+            if (sortOrder === 'asc') {
+                return cellA - cellB; // Compare numeric values directly
+            } else {
+                return cellB - cellA; // Compare numeric values directly
+            }
+        });
+
+        var tbody = document.getElementById('ContractsTable').getElementsByTagName('tbody')[0];
+        for (var i = 0; i < rows.length; i++) {
+            tbody.appendChild(rows[i]);
+        }
+    });
+</script>
+
+<script>
+    document.getElementById('refreshButton').addEventListener('click', function () {
+        // Clear the search input field
+        document.getElementById('searchInput').value = '';
+
+        // Reset the sorting to default values
+        document.getElementById('sortColumn').value = 'Block';
+        document.getElementById('sortOrder').value = 'asc';
+
+        // Reset the extended search fields
+        document.getElementById('searchCustomer').value = '';
+        document.getElementById('searchDeptAmout').value = '';
+        document.getElementById('searchAmountOfMonthlyPayment').value = '';
+        document.getElementById('searchContractNumber').value = '';
+
+        // Show all rows in the table
+        var rows = document.getElementById('ContractsTable').getElementsByTagName('tbody')[0].getElementsByTagName('tr');
+        for (var i = 0; i < rows.length; i++) {
+            rows[i].style.display = '';
+        }
+    });
+</script>
+
+<script>
+    document.getElementById('searchButton').addEventListener('click', function () {
+        var searchCustomer = document.getElementById('searchCustomer').value.toLowerCase();
+        var searchDeptAmout = document.getElementById('searchDeptAmout').value.toLowerCase();
+        var searchAmountOfMonthlyPayment = document.getElementById('searchAmountOfMonthlyPayment').value.toLowerCase();
+        var searchContractNumber = document.getElementById('searchContractNumber').value.toLowerCase();
+
+        var rows = document.getElementById('ContractsTable').getElementsByTagName('tbody')[0].getElementsByTagName('tr');
+
+        for (var i = 0; i < rows.length; i++) {
+            var cells = rows[i].getElementsByTagName('td');
+            var match = true; // Assume it's a match initially
+
+            if (searchCustomer && !cells[1].innerText.toLowerCase().includes(searchCustomer)) {
+                match = false;
+            }
+            if (searchDeptAmout && !cells[6].innerText.toLowerCase().includes(searchDeptAmout)) {
+                match = false;
+            }
+            if (searchAmountOfMonthlyPayment && !cells[9].innerText.toLowerCase().includes(searchAmountOfMonthlyPayment)) {
+                match = false;
+            }
+            if (searchContractNumber && !cells[10].innerText.toLowerCase().includes(searchContractNumber)) {
+                match = false;
+            }
+
+            rows[i].style.display = match ? '' : 'none';
+        }
+    });
+</script>
+
+<script>
+    document.getElementById('toggleExtendedSearch').addEventListener('click', function () {
+        var extendedSearchContainer = document.getElementById('extendedSearchContainer');
+        if (extendedSearchContainer.style.display === 'none' || extendedSearchContainer.style.display === '') {
+            extendedSearchContainer.style.display = 'block';
+        } else {
+            extendedSearchContainer.style.display = 'none';
+        }
+    });
+</script>

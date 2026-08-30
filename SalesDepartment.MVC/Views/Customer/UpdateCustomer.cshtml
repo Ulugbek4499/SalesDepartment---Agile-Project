@@ -1,0 +1,81 @@
+﻿@using SalesDepartment.Application.UseCases.Customers.Commands.UpdateCustomer;
+@using SalesDepartment.Application.UseCases.Customers.Response;
+@using SalesDepartment.Domain.Entities;
+@model CustomerResponse
+
+@{
+    ViewData["Title"] = "UpdateCustomer";
+    Layout = "_Layout";
+}
+
+<h3 class="text-center">Изменить информацию о клиенте</h3>
+<hr />
+
+<form asp-controller="Customer" asp-action="UpdateCustomer" enctype="multipart/form-data" method="post">
+    <input type="hidden" asp-for="Id" />
+
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-6" style="overflow-y:scroll; width:50%; height:70vh">
+                <div class="custom-input">
+
+                    <div class="form-group mt-3">
+                        <label asp-for="FirstName">Имя:</label>
+                        <input asp-for="FirstName" class="form-control" required value="@Model.FirstName" />
+                        <span asp-validation-for="FirstName" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group mt-3">
+                        <label asp-for="LastName" class="form-label">Фамилия:</label>
+                        <input asp-for="LastName" type="text" class="form-control" value="@Model.LastName">
+                        <span asp-validation-for="LastName" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group mt-3">
+                        <label asp-for="MiddleName">Очество:</label>
+                        <input asp-for="MiddleName" class="form-control" required value="@Model.MiddleName" />
+                        <span asp-validation-for="MiddleName" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group mt-3">
+                        <label asp-for="Passport">Паспорт:</label>
+                        <input asp-for="Passport" class="form-control" required value="@Model.Passport" />
+                        <span asp-validation-for="Passport" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group mt-3">
+                        <label asp-for="PassportIssuedBy" class="form-label">Выдан Паспорт:</label>
+                        <input asp-for="PassportIssuedBy" type="text" class="form-control" value="@Model.PassportIssuedBy">
+                        <span asp-validation-for="PassportIssuedBy" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group mt-3">
+                        <label asp-for="Address">Адрес:</label>
+                        <input asp-for="Address" class="form-control" required value="@Model.Address" />
+                        <span asp-validation-for="Address" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group mt-3">
+                        <label asp-for="PhoneNumberOne">Номер телефона 1:</label>
+                        <input asp-for="PhoneNumberOne" class="form-control" required value="@Model.PhoneNumberOne" />
+                        <span asp-validation-for="PhoneNumberOne" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group mt-3">
+                        <label asp-for="PhoneNumberTwo" class="form-label">Номер телефона 2:</label>
+                        <input asp-for="PhoneNumberTwo" type="text" class="form-control" value="@Model.PhoneNumberTwo">
+                        <span asp-validation-for="PhoneNumberTwo" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group button-group mt-3">
+                        <button type="submit" class="btn btn-success">Сохранять</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

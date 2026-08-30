@@ -1,0 +1,173 @@
+﻿@using SalesDepartment.Application.UseCases.Contracts.Commands.CreateContract;
+@using SalesDepartment.Domain.Entities;
+@using SalesDepartment.Application.UseCases.Customers.Response;
+@using SalesDepartment.Application.UseCases.Founders.Response;
+@using SalesDepartment.Application.UseCases.Homes.Response;
+
+@{
+    ViewData["Title"] = "CreateContract";
+    Layout = "_Layout";
+
+
+    CustomerResponse[] Customers = ViewData["Customers"] as CustomerResponse[];
+    HomeResponse[] Homes = ViewData["Homes"] as HomeResponse[];
+    FounderResponse[] Founders = ViewData["Founders"] as FounderResponse[];
+}
+
+@model CreateContractCommand
+
+<h3 class="text-center">Добавить новый контракт</h3>
+<hr />
+<form asp-controller="Contract" asp-action="CreateContract" enctype="multipart/form-data" method="post">
+    <div class="container mt-4">
+        <div class="row">
+            <div class="col-lg-6 offset-lg-3" style="overflow-y:scroll; width:50%; height:70vh">
+
+                <div class="form-group mt-3">
+                    <label asp-for="ContractNumber" class="form-label">Контракт №:</label>
+                    <input asp-for="ContractNumber" type="text" class="form-control" placeholder="Введите Контракт №">
+                    <span asp-validation-for="ContractNumber" class="text-danger"></span>
+                </div>
+
+                <div class="form-group mt-3">
+                    <label asp-for="ContractStartDate">Дата контракта:</label>
+                    <input asp-for="ContractStartDate" type="date" class="form-control" required />
+                    <span asp-validation-for="ContractStartDate" class="text-danger"></span>
+                </div>
+
+                <div class="form-group mt-3">
+                    <label asp-for="TotalAmountOfContract" class="form-label">Общая сумма контракта:</label>
+                    <input asp-for="TotalAmountOfContract" type="text" class="form-control" placeholder="Введите oбщая сумма контракта">
+                    <span asp-validation-for="TotalAmountOfContract" class="text-danger"></span>
+                </div>
+
+                <div class="form-group mt-3">
+                    <label asp-for="PaymentStartDate"> Дата начала платежа:</label>
+                    <input asp-for="PaymentStartDate" type="date" class="form-control" required />
+                    <span asp-validation-for="PaymentStartDate" class="text-danger"></span>
+                </div>
+
+                <div class="form-group mt-3">
+                    <label asp-for="NumberOfMonths" class="form-label">Количество месяцев:</label>
+                    <input asp-for="NumberOfMonths" type="text" class="form-control" placeholder="Введите количество месяцев">
+                    <span asp-validation-for="NumberOfMonths" class="text-danger"></span>
+                </div>
+
+                <div class="form-group mt-3">
+                    <label asp-for="InAdvancePaymentOfContract" class="form-label">Сумма предоплаты:</label>
+                    <input asp-for="InAdvancePaymentOfContract" type="decimal" class="form-control" placeholder="Введите cумма предоплаты">
+                    <span asp-validation-for="InAdvancePaymentOfContract" class="text-danger"></span>
+                </div>
+
+                <div class="form-group mt-3">
+                    <label for="HomeId">Квартира:</label>
+                    <select class="form-control" id="HomeId" name="HomeId" required>
+                        <option value="">Выбрать квартиру (Здания/Подъезд №/Этаже/Квартира №/Площадь)</option>
+                        @foreach (var home in Homes)
+                        {
+                            @if (home.ContractId == null || home.ContractId == 0)
+                            {
+                                <option value="@home.Id">@home.Block / @home.Entrance / @home.Floor / @home.ApartmentNumber / @home.Area</option>
+                            }
+                        }
+                    </select>
+                </div>
+                <script>
+                    $(document).ready(function () {
+                        $('#HomeId').select2(); // Initialize Select2
+                    });
+                </script>
+
+
+                <div class="form-group mt-3">
+                    <label for="CustomerId">Клиент:</label>
+                    <select class="form-control" id="CustomerId" name="CustomerId" required>
+                        <option value="">Выбрать Клиент</option>
+                        @foreach (var customer in Customers)
+                        {
+                            <option value="@customer.Id">@customer.LastName @customer.FirstName @customer.MiddleName / @customer.PhoneNumberOne / @customer.PhoneNumberTwo</option>
+                        }
+                    </select>
+                </div>
+                <script>
+                    $(document).ready(function () {
+                        $('#CustomerId').select2(); // Initialize Select2
+                    });
+                </script>
+
+
+                <div class="form-group mt-3">
+                    <label for="FounderId">Основатель:</label>
+                    <select class="form-control" id="FounderId" name="FounderId" required>
+                        <option value="">Выбрать Основатель</option>
+                        @foreach (var founder in Founders)
+                        {
+                            <option value="@founder.Id">@founder.LastName @founder.FirstName @founder.MiddleName</option>
+                        }
+                    </select>
+                </div>
+
+                <div class="form-group button-group mt-3">
+                    <button type="submit" class="btn btn-success">Сохранять</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+
+<script>
+    $(document).ready(function () {
+        // Initialize Select2 with custom options
+        $('#HomeId').select2({
+            placeholder: "Введите квартиру",
+            allowClear: true,
+            matcher: function (params, data) {
+                // If there's no search term, return all options
+                if ($.trim(params.term) === '') {
+                    return data;
+                }
+
+                // Remove special characters and convert to lowercase for comparison
+                var term = $.trim(params.term).toLowerCase();
+                var text = data.text.toLowerCase();
+
+                // Check if the data text contains the term
+                if (text.indexOf(term) > -1) {
+                    return data;
+                }
+
+                return null;
+            }
+        });
+    });
+</script>
+
+<script>
+    $(document).ready(function () {
+        // Initialize Select2 with custom options
+        $('#CustomerId').select2({
+            placeholder: "Введите Клиенту",
+            allowClear: true,
+            matcher: function (params, data) {
+                // If there's no search term, return all options
+                if ($.trim(params.term) === '') {
+                    return data;
+                }
+
+                // Remove special characters and convert to lowercase for comparison
+                var term = $.trim(params.term).toLowerCase();
+                var text = data.text.toLowerCase();
+
+                // Check if the data text contains the term
+                if (text.indexOf(term) > -1) {
+                    return data;
+                }
+
+                return null;
+            }
+        });
+    });
+</script>

@@ -1,0 +1,72 @@
+﻿@using SalesDepartment.Application.UseCases.Customers.Commands.CreateCustomer;
+@using SalesDepartment.Domain.Entities;
+
+@{
+    ViewData["Title"] = "CreateCustomer";
+    Layout = "_Layout";
+}
+
+@model CreateCustomerCommand
+
+<h3 class="text-center">Добавить нового клиента</h3>
+<hr />
+<form asp-controller="Customer" asp-action="CreateCustomer" enctype="multipart/form-data" method="post">
+    <div class="container mt-4">
+        <div class="row">
+            <div class="col-lg-6 offset-lg-3" style="overflow-y:scroll; width:50%; height:70vh">
+
+                <div class="form-group mt-3">
+                    <label asp-for="FirstName" class="form-label">Имя:</label>
+                    <input asp-for="FirstName" type="text" class="form-control" placeholder="Введите Имя">
+                    <span asp-validation-for="FirstName" class="text-danger"></span>
+                </div>
+
+                <div class="form-group mt-3">
+                    <label asp-for="LastName" class="form-label">Фамилия:</label>
+                    <input asp-for="LastName" type="text" class="form-control" placeholder="Введите Фамилия">
+                    <span asp-validation-for="LastName" class="text-danger"></span>
+                </div>
+
+                <div class="form-group mt-3">
+                    <label asp-for="MiddleName" class="form-label">Очество:</label>
+                    <input asp-for="MiddleName" type="text" class="form-control" placeholder="Введите Очество">
+                    <span asp-validation-for="MiddleName" class="text-danger"></span>
+                </div>
+
+                <div class="form-group mt-3">
+                    <label asp-for="Passport" class="form-label">Паспорт:</label>
+                    <input asp-for="Passport" type="text" class="form-control" placeholder="Введите Паспорт">
+                    <span asp-validation-for="Passport" class="text-danger"></span>
+                </div>
+
+                <div class="form-group mt-3">
+                    <label asp-for="PassportIssuedBy" class="form-label">Выдан Паспорт:</label>
+                    <input asp-for="PassportIssuedBy" type="text" class="form-control" placeholder="Введите паспорт выданный">
+                    <span asp-validation-for="PassportIssuedBy" class="text-danger"></span>
+                </div>
+
+                <div class="form-group mt-3">
+                    <label asp-for="Address" class="form-label">Адрес:</label>
+                    <input asp-for="Address" type="text" class="form-control" placeholder="Введите Адрес">
+                    <span asp-validation-for="Address" class="text-danger"></span>
+                </div>
+
+                <div class="form-group mt-3">
+                    <label asp-for="PhoneNumberOne" class="form-label">Номер телефона 1:</label>
+                    <input asp-for="PhoneNumberOne" type="text" class="form-control" placeholder="Введите Номер телефона 1">
+                    <span asp-validation-for="PhoneNumberOne" class="text-danger"></span>
+                </div>
+
+                <div class="form-group mt-3">
+                    <label asp-for="PhoneNumberTwo" class="form-label">Номер телефона 2:</label>
+                    <input asp-for="PhoneNumberTwo" type="text" class="form-control" placeholder="Введите Номер телефона 2">
+                    <span asp-validation-for="PhoneNumberTwo" class="text-danger"></span>
+                </div>
+
+                <div class="form-group button-group mt-3">
+                    <button type="submit" class="btn btn-success">Сохранять</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>

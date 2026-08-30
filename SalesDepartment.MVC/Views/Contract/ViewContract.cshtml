@@ -1,0 +1,232 @@
+﻿@using SalesDepartment.Application.UseCases.Contracts.Response;
+
+@{
+    Layout = "_Layout";
+}
+
+@model ContractResponse
+
+<h3 class="text-center">Информация о контракте</h3>
+
+<div style="display: flex; justify-content: space-between;">
+    <div>
+        <a href="@Url.Action("UpdateContract", new { id = @Model.Id })" class="btn btn-secondary">
+            <i class="fas fa-pen-to-square"></i>Изменить
+        </a>
+        <a href="@Url.Action("DeleteContract", new { id = @Model.Id })" class="btn btn-danger">
+            <i class="fas fa-trash-can"></i>Удалить
+        </a>
+    </div>
+    <div>
+        <a href="@Url.Action("ContractInDocx", "Contract", new { id = @Model.Id })" class="btn btn-outline-info">
+            <i class="fa-regular fa-file-word"></i> Договор в Docx
+        </a>
+        <a href="@Url.Action("GraphicInDocx", "Report", new { id = @Model.Id })" class="btn btn-outline-info">
+            <i class="fa-regular fa-file-word"></i> Графика платежей в Docx
+        </a>
+    </div>
+</div>
+
+<hr />
+<div class="container" style="height: 100vh;">
+    <div class="row" style="display: flex; justify-content: center;">
+        <div class="col-lg-12" style="width: 100%;">
+            <div class="custom-cards">
+                <div class="table-container" style="overflow-y: scroll; height: 80vh; width: 100%;">
+                    <div class="col-lg-6">
+                        <div class="custom-cards">
+                            <h4 class="text-center">Информация о контракте</h4>
+                            <table class="table table-bordered">
+                                <tr>
+                                    <th>Контракт №</th>
+                                    <td>@Model.ContractNumber</td>
+                                </tr>
+                                <tr>
+                                    <th>Дата начала контракта</th>
+                                    <td>@Model.ContractStartDate.ToString("yyyy-MM-dd")</td>
+                                </tr>
+                                <tr>
+                                    <th>Общая сумма контракта</th>
+                                    <td>@Model.TotalAmountOfContract.ToString("N2")</td>
+                                </tr>
+                                <tr>
+                                    <th>Предоплата</th>
+                                    <td>@Model.InAdvancePaymentOfContract.ToString("N2")</td>
+                                </tr>
+                                <tr>
+                                    <th>Ежемесячно оплата</th>
+                                    <td>@Model.AmountOfMonthlyPayment.ToString("N2")</td>
+                                </tr>
+                                <tr>
+                                    <th>Количество месяцев</th>
+                                    <td>@Model.NumberOfMonths</td>
+                                </tr>
+                                <tr>
+                                    <th>Дата начала платежа</th>
+                                    <td>@Model.PaymentStartDate.ToString("yyyy-MM-dd")</td>
+                                </tr>
+                                <tr>
+                                    <th>Имя основателя</th>
+                                    <td>@Model.Founder.FirstName @Model.Founder.LastName</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="col-lg-6">
+                        <div class="custom-cards">
+                            <h4 class="text-center">Информация о клиенте</h4>
+                            <table class="table table-bordered">
+                                <tr>
+                                    <th>Имя</th>
+                                    <td>@Model.Customer.FirstName</td>
+                                </tr>
+                                <tr>
+                                    <th>Фамилия</th>
+                                    <td>@Model.Customer.LastName</td>
+                                </tr>
+                                <tr>
+                                    <th>Отчество</th>
+                                    <td>@Model.Customer.MiddleName</td>
+                                </tr>
+                                <tr>
+                                    <th>Паспорт</th>
+                                    <td>@Model.Customer.Passport</td>
+                                </tr>
+                                <tr>
+                                    <th>Выданное место</th>
+                                    <td>@Model.Customer.PassportIssuedBy</td>
+                                </tr>
+                                <tr>
+                                    <th>Адрес</th>
+                                    <td>@Model.Customer.Address</td>
+                                </tr>
+                                <tr>
+                                    <th>Телефон номер 1</th>
+                                    <td>@Model.Customer.PhoneNumberOne</td>
+                                </tr>
+                                <tr>
+                                    <th>Телефон номер 2</th>
+                                    <td>@Model.Customer.PhoneNumberTwo</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="col-lg-6">
+                        <div class="custom-cards">
+                            <h4 class="text-center">
+                                Информация о квартире
+                            </h4>
+                            <table class="table table-bordered">
+                                <tr>
+                                    <th>Здания</th>
+                                    <td>@Model.Home.Block</td>
+                                </tr>
+                                <tr>
+                                    <th>Подъезд №</th>
+                                    <td>@Model.Home.Entrance</td>
+                                </tr>
+                                <tr>
+                                    <th>Этаже</th>
+                                    <td>@Model.Home.Floor</td>
+                                </tr>
+                                <tr>
+                                    <th>Квартира №</th>
+                                    <td>@Model.Home.ApartmentNumber</td>
+                                </tr>
+                                <tr>
+                                    <th>Количество комнат</th>
+                                    <td>@Model.Home.NumberOfRooms</td>
+                                </tr>
+                                <tr>
+                                    <th>Проектной площадью</th>
+                                    <td>@Model.Home.Area</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="container" style="height: 100vh;">
+                        <div class="row" style="display: flex; justify-content: center;">
+                            <div class="col-lg-12" style="width: 100%;">
+                                <div class="custom-cards">
+                                    <div class="table-container" >
+                                        <!-- Scheduled Payments Table -->
+                                        <div class="col-lg-12">
+                                            <div class="custom-cards">
+                                                <h4 class="text-center">Графики платежей</h4>
+                                                <table class="table table-bordered">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>Номер №</th>
+                                                            <th>Запланированные даты</th>
+                                                            <th>Запланированный платеж</th>
+                                                            <th>Ежемесячно оплата</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        @if (Model.ScheduledInfo != null)
+                                                        {
+                                                            int rowNumber = 1;
+                                                            foreach (var scheduled in Model.ScheduledInfo)
+                                                            {
+                                                                <tr>
+                                                                    <td>@rowNumber</td>
+                                                                    <td>@scheduled.Key.ToString("yyyy-MM-dd")</td>
+                                                                    <td>@scheduled.Value.ToString("N2")</td> <!-- Remove the dollar sign and format with two decimal places -->
+                                                                    <td>@Model.AmountOfMonthlyPayment.ToString("N2")</td> <!-- Remove the dollar sign and format with two decimal places -->
+                                                                </tr>
+                                                                rowNumber++;
+                                                            }
+                                                        }
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+
+                                        <!-- Payments History Table -->
+                                        <div class="col-lg-12">
+                                            <div class="custom-cards">
+                                                <h4 class="text-center">История платежей</h4>
+                                                <table class="table table-bordered">
+                                                    <thead>
+                                                        <tr>
+                                                            <th style="width: 25%;">Номер платежа №</th>
+                                                            <th style="width: 25%;">Дата платежа</th>
+                                                            <th style="width: 25%;">Сумма</th>
+                                                            <th style="width: 25%;">Способ оплаты</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        @foreach (var payment in Model.Payments)
+                                                        {
+                                                            <tr>
+                                                                <td>@payment.PaymentNumber</td>
+                                                                <td>@payment.PaymentDate.ToString("yyyy-MM-dd")</td>
+                                                                <td>@payment.Amount.ToString("N2")</td> <!-- Format with commas and two decimal places -->
+                                                                <td>@payment.PaymentType.Name</td>
+                                                            </tr>
+                                                        }
+                                                        <!-- Add a row for today's date and total amount -->
+                                                        <tr>
+                                                            <td colspan="2" class="text-right"><strong>Итого:</strong></td>
+                                                            <td><strong>@Model.Payments.Sum(p => p.Amount).ToString("N2")</strong></td> <!-- Calculate and format total amount -->
+                                                            <td></td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,299 @@
+﻿@{
+    Layout = "_Layout";
+}
+
+@model SalesDepartment.Application.UseCases.Payments.Response.PaymentResponse[]
+
+<h3 class="text-center">Все Платежи</h3>
+<div class="row">
+    <div class="col">
+        <div class="input-group mb-1 mt-3" style="display:flex; justify-content:space-between; gap:20px;">
+            <div style="display: flex; gap: 20px;">
+                <a href="@Url.Action("CreatePayment")" class="btn btn-primary mr-2">
+                    <i class="fa-solid fa-plus"></i> Платеж
+                </a>
+                <a asp-controller="PaymentType" asp-action="GetAllPaymentTypes" class="nav-link">
+                    <div class="icon-wrapper">
+                        <i class="fa-solid fa-file-invoice-dollar"></i> Типы платежей
+                    </div>
+                </a>
+            </div>
+
+            <div style="display:flex; gap:5px">
+                <button id="refreshButton" class="btn btn-warning"><i class="fa-solid fa-arrows-rotate"></i> </button>
+                <input id="searchInput" type="text" class="form-control" placeholder="Поиск" style="max-width: 200px;">
+                <div class="input-group-append">
+                    <button id="searchButtonSimple" class="btn btn-info" type="button">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col">
+        <div class="input-group mb-1 mt-3" style="display:flex; justify-content:space-between; gap:170px">
+            <div>
+           @*     <a asp-controller="Payment" asp-action="CreatePaymentFromExcel" class="btn btn-success">
+                    <i class="fa-solid fa-file-excel"></i> <i class="fa-solid fa-upload"></i>Создать Из Excel
+                </a>*@
+                <a asp-controller="Payment" asp-action="GetAllPaymentsExcel" class="btn btn-success">
+                    <i class="fa-solid fa-file-excel"></i> <i class="fa-solid fa-download"></i>Получить в Excel
+                </a>
+            </div>
+            <div style="display:flex; gap:5px">
+                <select id="sortColumn" class="form-control">
+                    <option value="PaymentNumber">Номер платежа №</option>
+                    <option value="PaymentDate">Дата платежа</option>
+                    <option value="Amount">Сумма </option>
+                    <option value="ContractId">Контракт №</option>
+                    <option value="PaymentTypeId">Тип платежей</option>
+                </select>
+                <select id="sortOrder" class="form-control">
+                    <option value="asc">Восходящий</option>
+                    <option value="desc">Нисходящий</option>
+                </select>
+                <button id="sortButton" class="btn btn-info"><i class="fa-solid fa-arrow-up-a-z"></i> </button>
+                <button id="toggleExtendedSearch" class="btn btn-info"><i class="fa-solid fa-filter"></i> </button>
+            </div>
+
+        </div>
+    </div>
+</div>
+<div id="extendedSearchContainer" style="display: none;">
+    <div class="row">
+        <div class="col">
+            <div class="input-group mb-1 mt-3" style="display:flex; justify-content:space-between; gap:5px;">
+                <input id="searchPaymentNumber" type="text" class="form-control" placeholder="Платежа №">
+                <input id="searchStartDate" type="date" class="form-control" placeholder="Дата начала">
+                <input id="searchEndDate" type="date" class="form-control" placeholder="Дата окончания">
+                <input id="searchAmount" type="text" class="form-control" placeholder="Сумма">
+                <input id="searchContractId" type="text" class="form-control" placeholder="Контракт №">
+                <input id="searchPaymentTypeId" type="text" class="form-control" placeholder="Тип платежей">
+                <div class="input-group-append">
+                    <button id="searchButton" class="btn btn-info" type="button">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<hr />
+
+<div class="container" style="height: 55vh;">
+    <div class="row" style="display:flex; justify-content:center;">
+        <div class="col-lg-6" style="width:100%">
+            <div class="custom-cards">
+                @{
+                    if (Model.Length == 0)
+                    {
+                        <h2>Платежей пока нет...</h2>
+                    }
+                }
+
+                <div class="table-container" style="overflow-y: scroll; height: 68vh; width:100% ">
+                    <table id="PaymentsTable" class="table">
+                        <thead>
+                            <tr>
+                                <th style="width: 25%;">Действия</th>
+                                <th data-column="PaymentNumber" style="width: 10%;">Платеж №</th>
+                                <th data-column="PaymentDate" style="width: 15%;">Дата платежа</th>
+                                <th data-column="Amount" style="width: 15%;">Сумма</th>
+                                <th data-column="ContractId" style="width: 15%;">Контракт №</th>
+                                <th data-column="PaymentTypeId" style="width: 15%;">Тип платежей</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var Payment in Model)
+                            {
+                                <tr>
+                                    <td class="action-links">
+                                        <div style="display:flex; gap:5px">
+                                            <a href="@Url.Action("PaymentInDocx", "Payment", new { id = Payment.Id })" class="btn btn-outline-primary">
+                                                <i class="fa-regular fa-file-word"></i>
+                                            </a>
+                                            <a href="@Url.Action("ViewContract", "Contract", new { id = Payment.Contract.Id })" class="btn btn-secondary"><i class="fas fa-info-circle"></i> Подробно</a>
+                                            <a href="@Url.Action("UpdatePayment", new { id = Payment.Id })" class="btn btn-secondary"><i class="fas fa-pen-to-square"></i></a>
+                                            <a href="@Url.Action("DeletePayment", new { id = Payment.Id })" class="btn btn-danger"><i class="fas fa-trash-can"></i></a>
+                                        </div>
+                                    </td>
+                                    <td data-column="PaymentNumber">@Payment.PaymentNumber</td>
+                                    <td data-column="PaymentDate">@Payment.PaymentDate.ToString("yyyy-MM-dd")</td>
+                                    <td data-column="Amount" class="amount-cell">@Payment.Amount</td>
+                                    <td data-column="ContractId">@Payment.Contract.ContractNumber</td>
+                                    <td data-column="PaymentTypeId">@Payment.PaymentType.Name</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.getElementById('searchButtonSimple').addEventListener('click', function () {
+        var input = document.getElementById('searchInput').value.toLowerCase();
+        var rows = document.getElementById('PaymentsTable').getElementsByTagName('tbody')[0].getElementsByTagName('tr');
+
+        for (var i = 0; i < rows.length; i++) {
+            var cells = rows[i].getElementsByTagName('td');
+            var match = false;
+
+            for (var j = 0; j < cells.length; j++) {
+                var cellText = cells[j].innerText.toLowerCase();
+                if (cellText.includes(input)) {
+                    match = true;
+                    break;
+                }
+            }
+
+            rows[i].style.display = match ? '' : 'none';
+        }
+    });
+
+    document.getElementById('sortButton').addEventListener('click', function () {
+        var column = document.getElementById('sortColumn').value;
+        var sortOrder = document.getElementById('sortOrder').value;
+        var rows = Array.from(document.getElementById('PaymentsTable').getElementsByTagName('tbody')[0].getElementsByTagName('tr'));
+
+        rows.sort(function (a, b) {
+            var cellA = a.querySelector('td[data-column="' + column + '"]').textContent.toLowerCase();
+            var cellB = b.querySelector('td[data-column="' + column + '"]').textContent.toLowerCase();
+
+            if (column === "Amount" || column === "PaymentNumber") {
+                cellA = parseFloat(cellA.replace(',', '.')) || 0;
+                cellB = parseFloat(cellB.replace(',', '.')) || 0;
+            }
+
+            if (column === "PaymentDate") {
+                cellA = new Date(cellA);
+                cellB = new Date(cellB);
+            }
+
+            if (sortOrder === 'asc') {
+                return cellA < cellB ? -1 : cellA > cellB ? 1 : 0;
+            } else {
+                return cellB < cellA ? -1 : cellB > cellA ? 1 : 0;
+            }
+        });
+
+        var tbody = document.getElementById('PaymentsTable').getElementsByTagName('tbody')[0];
+        for (var i = 0; i < rows.length; i++) {
+            tbody.appendChild(rows[i]);
+        }
+    });
+
+</script>
+
+<script>
+    document.getElementById('searchButton').addEventListener('click', function () {
+        var searchPaymentNumber = document.getElementById('searchPaymentNumber').value.toLowerCase();
+        var searchStartDate = document.getElementById('searchStartDate').value;
+        var searchEndDate = document.getElementById('searchEndDate').value;
+        var searchAmount = document.getElementById('searchAmount').value.toLowerCase();
+        var searchContractId = document.getElementById('searchContractId').value.toLowerCase();
+        var searchPaymentTypeId = document.getElementById('searchPaymentTypeId').value.toLowerCase();
+
+        var rows = document.getElementById('PaymentsTable').getElementsByTagName('tbody')[0].getElementsByTagName('tr');
+
+        for (var i = 0; i < rows.length; i++) {
+            var cells = rows[i].getElementsByTagName('td');
+            var paymentDate = Date.parse(cells[2].innerText);
+
+            var match = true; // Assume it's a match initially
+
+            if (searchPaymentNumber && !cells[1].innerText.toLowerCase().includes(searchPaymentNumber)) {
+                match = false;
+            }
+            if (searchStartDate) {
+                var startDate = new Date(searchStartDate);
+                if (searchEndDate) {
+                    var endDate = new Date(searchEndDate);
+                    if (paymentDate < startDate || paymentDate > endDate) {
+                        match = false;
+                    }
+                } else {
+                    // If only start date is entered, show payments for that specific day
+                    if (!isSameDay(paymentDate, startDate)) {
+                        match = false;
+                    }
+                }
+            }
+            if (searchAmount && !cells[3].innerText.toLowerCase().includes(searchAmount)) {
+                match = false;
+            }
+            if (searchContractId && !cells[4].innerText.toLowerCase().includes(searchContractId)) {
+                match = false;
+            }
+            if (searchPaymentTypeId && !cells[5].innerText.toLowerCase().includes(searchPaymentTypeId)) {
+                match = false;
+            }
+
+            rows[i].style.display = match ? '' : 'none';
+        }
+    });
+
+    function isSameDay(date1, date2) {
+        return date1.getDate() === date2.getDate() &&
+            date1.getMonth() === date2.getMonth() &&
+            date1.getFullYear() === date2.getFullYear();
+    }
+</script>
+
+<script>
+    document.getElementById('refreshButton').addEventListener('click', function () {
+        // Clear the search input field
+        document.getElementById('searchInput').value = '';
+
+        // Reset the sorting to default values
+        document.getElementById('sortColumn').value = 'PaymentNumber';
+        document.getElementById('sortOrder').value = 'asc';
+
+        // Reset the extended search fields
+        document.getElementById('searchPaymentNumber').value = '';
+        document.getElementById('searchStartDate').value = '';
+        document.getElementById('searchEndDate').value = '';
+        document.getElementById('searchAmount').value = '';
+        document.getElementById('searchContractId').value = '';
+        document.getElementById('searchPaymentTypeId').value = '';
+
+        // Show all rows in the table
+        var rows = document.getElementById('PaymentsTable').getElementsByTagName('tbody')[0].getElementsByTagName('tr');
+        for (var i = 0; i < rows.length; i++) {
+            rows[i].style.display = '';
+        }
+    });
+</script>
+
+<script>
+    document.getElementById('toggleExtendedSearch').addEventListener('click', function () {
+        var extendedSearchContainer = document.getElementById('extendedSearchContainer');
+        if (extendedSearchContainer.style.display === 'none' || extendedSearchContainer.style.display === '') {
+            extendedSearchContainer.style.display = 'block';
+        } else {
+            extendedSearchContainer.style.display = 'none';
+        }
+    });
+</script>
+
+<script>
+    // Function to format the amount cells
+    function formatAmountCells() {
+        var amountCells = document.querySelectorAll('.amount-cell');
+        amountCells.forEach(function (cell) {
+            var amount = parseFloat(cell.textContent);
+            if (!isNaN(amount)) {
+                cell.textContent = amount.toLocaleString(undefined, { minimumFractionDigits: 2 });
+            }
+        });
+    }
+
+    // Call the function when the document is ready
+    document.addEventListener('DOMContentLoaded', function () {
+        formatAmountCells();
+    });
+</script>

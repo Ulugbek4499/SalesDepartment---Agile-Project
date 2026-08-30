@@ -1,0 +1,30 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="text-center" style="display:flex; flex-direction:column; justify-content:center; align-items:center;">
+
+    <div class="d-flex align-items-center justify-content-center" id="main">
+        <img src="/City1.jpg" height="600px" /> <!-- Increase the height here -->
+    </div>
+
+    <div class="button-container">
+        <a asp-controller="Report" asp-action="GetStatistics" class="btn btn-dark custom-btn">
+            <i class="fa-solid fa-play"></i> Статистика Продаж
+        </a>
+    </div>
+
+</div>
+
+<style>
+    .button-container {
+        margin-top: 20px;
+    }
+
+    .custom-btn {
+        color: black; 
+        background-color: white;
+    }
+</style>
+
+

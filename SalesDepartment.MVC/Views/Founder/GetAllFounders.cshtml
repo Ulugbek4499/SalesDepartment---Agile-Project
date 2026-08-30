@@ -1,0 +1,96 @@
+﻿@{
+    Layout = "_Layout";
+}
+
+@model SalesDepartment.Application.UseCases.Founders.Response.FounderResponse[]
+
+
+<h3 class="text-center">Все основатели</h3>
+<div class="row">
+    <div class="col">
+        <div class="input-group mb-1 mt-3" style="display:flex; justify-content:space-between; gap:170px">
+            <a href="@Url.Action("CreateFounder")" class="btn btn-primary mr-2">
+                <i class="fa-solid fa-plus"></i> Основатель
+            </a>
+            <div style="display:flex; gap:5px">
+                <input id="searchInput" type="text" class="form-control" placeholder="Поиск" style="max-width: 200px;">
+                <div class="input-group-append">
+                    <button id="searchButton" class="btn btn-info" type="button">
+                        <i class="fa-solid fa-magnifying-glass"></i> 
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<hr />
+
+<div class="container" style="height: 55vh;">
+    <div class="row" style="display:flex; justify-content:center;">
+        <div class="col-lg-6" style="width:100%">
+            <div class="custom-cards">
+                @{
+                    if (Model.Length == 0)
+                    {
+                        <h2>There are no Founders yet...</h2>
+                    }
+                }
+
+                <div class="table-container" style="overflow-y: scroll; height: 68vh; width:100% ">
+                    <table id="FoundersTable" class="table">
+                        <thead>
+                            <tr>
+                                <th style="width: 15%;">Действия</th>
+                                <th style="width: 15%;">Имя</th>
+                                <th style="width: 15%;">Фамилия</th>
+                                <th style="width: 15%;">Очество</th>
+                                <th style="width: 15%;">Номер телефона</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var Founder in Model)
+                            {
+                                <tr>
+                                    <td class="action-links">
+                                        <div style="display:flex; gap:5px">
+                                            <a href="@Url.Action("UpdateFounder", new { id = Founder.Id })" class="btn btn-secondary"><i class="fas fa-pen-to-square"></i></a>
+                                            <a href="@Url.Action("DeleteFounder", new { id = Founder.Id })" class="btn btn-danger"><i class="fas fa-trash-can"></i></a>
+                                            <a href="@Url.Action("ViewFounder", new { id = Founder.Id })" class="btn btn-secondary"> <i class="fas fa-info-circle"></i> Подробно</a>
+                                        </div>
+                                    </td>
+                                    <td>@Founder.FirstName</td>
+                                    <td>@Founder.LastName</td>
+                                    <td>@Founder.MiddleName</td>
+                                    <td>@Founder.PhoneNumber</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.getElementById('searchButton').addEventListener('click', function () {
+        var input = document.getElementById('searchInput').value.toLowerCase();
+        var rows = document.getElementById('FoundersTable').getElementsByTagName('tbody')[0].getElementsByTagName('tr');
+
+        for (var i = 0; i < rows.length; i++) {
+            var cells = rows[i].getElementsByTagName('td');
+            var match = false;
+
+            for (var j = 0; j < cells.length; j++) {
+                var cellText = cells[j].innerText.toLowerCase();
+                if (cellText.includes(input)) {
+                    match = true;
+                    break;
+                }
+            }
+
+            rows[i].style.display = match ? '' : 'none';
+        }
+    });
+</script>
